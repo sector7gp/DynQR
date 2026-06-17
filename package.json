@@ -1,0 +1,34 @@
+{
+  "name": "dynqr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "backend": "node backend/server.js",
+    "frontend": "cd frontend && npm start",
+    "install-all": "npm install && cd frontend && npm install && cd ..",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sector7gp/DynQR.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sector7gp/DynQR/issues"
+  },
+  "homepage": "https://github.com/sector7gp/DynQR#readme",
+  "dependencies": {
+    "concurrently": "^10.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.3",
+    "uuid": "^14.0.0"
+  }
+}
