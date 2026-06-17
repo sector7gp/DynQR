@@ -31,6 +31,7 @@ console.log('🎬 Token inicial generado:', initialToken.substring(0, 8) + '...'
 app.get('/api/qr', async (req, res) => {
   try {
     const currentToken = Array.from(validTokens)[0];
+    console.log('📲 QR solicitado. Token actual:', currentToken.substring(0, 8) + '...');
     const reservationUrl = `http://localhost:3000/reservations?token=${currentToken}`;
     
     const qrImage = await qrcode.toDataURL(reservationUrl, {
@@ -45,13 +46,14 @@ app.get('/api/qr', async (req, res) => {
       }
     });
 
+    console.log('✅ QR generado exitosamente');
     res.json({
       success: true,
       qrImage,
       token: currentToken
     });
   } catch (error) {
-    console.error('Error generando QR:', error);
+    console.error('❌ Error generando QR:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

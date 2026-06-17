@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './App.css';
+import './QRDisplay.css';
 
 function QRDisplay() {
   const [qrImage, setQrImage] = useState(null);
@@ -10,12 +10,15 @@ function QRDisplay() {
   useEffect(() => {
     const fetchQR = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/qr`);
+        const apiUrl = `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/qr`;
+        console.log('📱 Fetching QR from:', apiUrl);
+        const response = await axios.get(apiUrl);
+        console.log('✅ QR Response:', response.data);
         setQrImage(response.data.qrImage);
         setCountdown(30);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching QR:', error);
+        console.error('❌ Error fetching QR:', error.message, error.response?.data);
         setLoading(false);
       }
     };
@@ -56,8 +59,12 @@ function QRDisplay() {
         ) : (
           <div className="qr-content">
             <div className="qr-box">
-              {qrImage && (
+              {qrImage ? (
                 <img src={qrImage} alt="QR Code" className="qr-image" />
+              ) : (
+                <div style={{ padding: '20px', color: '#E74C3C', textAlign: 'center', fontWeight: 'bold' }}>
+                  ⚠️ No se pudo cargar el QR. Verifica la consola (F12)
+                </div>
               )}
             </div>
             
