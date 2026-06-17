@@ -1,13 +1,13 @@
 {
   "name": "dynqr",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "backend": "node -r dotenv/config backend/server.js",
     "frontend": "cd frontend && npm start",
-    "build": "bash -c 'set -a && [ -f .env ] && source .env; set +a && cd frontend && npm run build'",
+    "build": "dotenv -e .env -- npm run build --prefix frontend",
     "prod": "npm run build && node -r dotenv/config backend/server.js",
     "pm2:start": "pm2 start ecosystem.config.cjs",
     "pm2:stop": "pm2 stop dynqr",
@@ -15,7 +15,8 @@
     "pm2:logs": "pm2 logs dynqr",
     "pm2:delete": "pm2 delete dynqr",
     "install-all": "npm install && cd frontend && npm install && cd ..",
-    "dev": "bash start.sh"
+    "dev": "bash scripts/start.sh",
+    "verify": "bash scripts/verify.sh"
   },
   "repository": {
     "type": "git",
@@ -37,5 +38,8 @@
     "qrcode": "^1.5.4",
     "socket.io": "^4.8.3",
     "uuid": "^14.0.0"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^11.0.0"
   }
 }

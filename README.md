@@ -1,310 +1,57 @@
-# 🎬 DynQR - Sistema Dinámico de Reservas con QR
+# DynQR
 
-Un sistema moderno y lúdico con **estética Toy Story 5** que genera un QR dinámico que se refresca cada 30 segundos y dirige a un sistema de reservas accesible SOLO mediante el código QR válido.
+Sistema de QR dinámico (refresh cada 30s) que dirige a un sistema de reservas protegido por token. Estética Toy Story 5.
 
-## 🎯 Características
+## Inicio rápido
 
-✨ **QR Dinámico**: Se genera automáticamente cada 30 segundos con un token único
-🔐 **Sistema de Tokens**: Validación en tiempo real - solo el QR válido permite acceder
-📱 **Sistema de Reservas Embebido**: Iframe de Acuity Scheduling integrado
-🚫 **Protección de Acceso**: Pantalla de error si intentan acceder sin token válido
-🎨 **Estética Toy Story 5**: Colores vibrantes, animaciones y diseño amigable
-
-## 🚀 Instalación
-
-### Requisitos
-- Node.js 16+ 
-- npm 8+
-
-### Pasos de instalación
-
-1. **Clonar el repositorio**
-```bash
-cd /Users/sector7gp/Code/DynQR
-```
-
-2. **Instalar todas las dependencias**
 ```bash
 npm run install-all
-```
-
-Esto instalará las dependencias del backend y frontend automáticamente.
-
-## 🏃 Ejecución
-
-### Opción 1: Ejecutar ambos servidores simultáneamente (RECOMENDADO)
-```bash
+cp .env.example .env
 npm run dev
 ```
 
-Esto usará automáticamente los puertos configurados en `.env`.
+Abrir `http://localhost:3000` (puertos configurables en `.env`).
 
-### Opción 2: Ejecutar servidores por separado
+## Comandos
 
-**Terminal 1 - Backend**
-```bash
-npm run backend
-```
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Desarrollo (backend + frontend) |
+| `npm run build` | Compilar frontend |
+| `npm run prod` | Build + backend en producción |
+| `npm run backend` | Solo backend |
+| `npm run pm2:start` | Iniciar con PM2 |
+| `npm run pm2:restart` | Reiniciar PM2 |
 
-**Terminal 2 - Frontend**
-```bash
-npm run frontend
-```
+## Flujo
 
-## 📋 Estructura del Proyecto
+1. Usuario ve el QR en pantalla
+2. Escanea con el móvil
+3. Backend valida el token
+4. Si es válido → reservas (Acuity); si no → error
+
+## Documentación
+
+- [Despliegue](docs/deploy.md) — NPM, PM2, producción
+- [Configuración](docs/configuration.md) — variables `.env`, puertos, textos QR
+- [Troubleshooting](docs/troubleshooting.md) — errores comunes
+- [Arquitectura](docs/architecture.md) — flujo y componentes
+
+## Estructura
 
 ```
 DynQR/
-├── backend/
-│   └── server.js              # Servidor Express con generación de QR
-├── frontend/
-│   ├── public/
-│   │   └── index.html         # HTML principal
-│   └── src/
-│       ├── QRDisplay.js       # Componente página QR
-│       ├── QRDisplay.css      # Estilos página QR
-│       ├── Reservations.js    # Componente página reservas
-│       ├── Reservations.css   # Estilos página reservas
-│       ├── App.js             # Componente principal
-│       ├── App.css            # Estilos globales
-│       └── index.js           # Punto de entrada React
-├── package.json               # Dependencias del proyecto
-├── .env                       # Variables de entorno
-└── README.md                  # Este archivo
-
+├── backend/server.js
+├── frontend/src/
+├── docs/
+├── scripts/
+├── deploy/
+├── ecosystem.config.cjs
+└── .env
 ```
 
-## 🔌 Endpoints de la API
+## API
 
-### GET `/api/qr`
-Obtiene el QR actual con imagen en formato DataURL
+`GET /api/qr` · `POST /api/validate-token` · `GET /api/health`
 
-**Respuesta:**
-```json
-{
-  "success": true,
-  "qrImage": "data:image/jpeg;base64,...",
-  "token": "uuid-token-string"
-}
-```
-
-### POST `/api/validate-token`
-Valida si un token es actualmente válido
-
-**Request:**
-```json
-{
-  "token": "uuid-token-string"
-}
-```
-
-**Respuesta:**
-```json
-{
-  "valid": true,
-  "message": "Token válido"
-}
-```
-
-### GET `/api/health`
-Verifica el estado del servidor
-
-**Respuesta:**
-```json
-{
-  "status": "ok",
-  "tokensActive": 1,
-  "timestamp": "2026-06-17T16:23:00.000Z"
-}
-```
-
-## 🎨 Páginas
-
-### 1. Página Principal (QR) - `http://localhost:3000/`
-- Muestra el código QR dinámico
-- Cuenta regresiva de 30 segundos hasta el siguiente QR
-- Decoraciones animadas con personajes de Toy Story
-- Estética colorida y amigable
-
-### 2. Página de Reservas - `http://localhost:3000/reservations?token=TOKEN`
-- Accesible SOLO con un token válido
-- Embebe el iframe de Acuity Scheduling
-- Diseño limpio con estética Toy Story
-
-### 3. Página de Error (No Autorizado)
-- Se muestra cuando:
-  - No hay token en la URL
-  - El token es inválido o expirado
-- Mensaje claro y decoraciones animadas
-- Invita al usuario a escanear el QR válido
-
-## 🔐 Seguridad
-
-- **Tokens únicos por sesión**: Cada 30 segundos se genera un nuevo token
-- **Validación en servidor**: No se confía en validación del lado del cliente
-- **Tokens de corta duración**: Se eliminan automáticamente después de 30 segundos
-- **Sin exposición de URL**: El iframe de reservas no es accesible directamente
-
-## 🎨 Paleta de Colores (Toy Story 5)
-
-- **Rosa Vibrante**: #FF6B9D
-- **Amarillo Cálido**: #FEC868
-- **Azul Cielo**: #66D9EF
-- **Rojo Energético**: #E74C3C
-- **Oro Brillante**: #FFD700
-- **Azul Profundo**: #3498DB
-
-## 📱 Responsive Design
-
-Ambas páginas están optimizadas para:
-- 📱 Dispositivos móviles (320px+)
-- 🖥️ Tablets (768px+)
-- 💻 Escritorio (1200px+)
-
-## 🎯 Flujo de Usuario
-
-1. Usuario ve la página principal con el QR
-2. Usuario escanea el QR con su dispositivo móvil
-3. Sistema valida el token
-4. Usuario es dirigido a la página de reservas
-5. Usuario ve el iframe de Acuity Scheduling y puede reservar
-6. Cada 30 segundos, se genera un nuevo QR (el anterior expira)
-
-## ⚙️ Configuración
-
-### Variables de Entorno
-
-**Backend** (`.env`):
-```
-BACKEND_PORT=5000
-BACKEND_HOST=localhost
-```
-
-**Frontend** (`.env` o `.env.local` — requieren `npm run build` en producción):
-```
-REACT_APP_API_URL=
-REACT_APP_QR_TITLE=🎬 Escanea para Reservar
-REACT_APP_QR_SUBTITLE=¡Bienvenido a Toy Story Universe!
-REACT_APP_SHOW_COUNTDOWN=true
-PORT=3000
-```
-
-| Variable | Descripción | Default |
-|----------|-------------|---------|
-| `REACT_APP_QR_TITLE` | Título principal de la página QR | `🎬 Escanea para Reservar` |
-| `REACT_APP_QR_SUBTITLE` | Subtítulo / bienvenida | `¡Bienvenido a Toy Story Universe!` |
-| `REACT_APP_SHOW_COUNTDOWN` | Mostrar cuadro del contador (`true` / `false`) | `true` |
-
-Para ocultar el contador: `REACT_APP_SHOW_COUNTDOWN=false` y luego `npm run build`.
-
-### Cambiar Puertos
-
-#### Opción 1: Usar script interactivo (RECOMENDADO)
-```bash
-bash configure-ports.sh
-```
-
-#### Opción 2: Editar `.env` manualmente
-```
-BACKEND_PORT=8080
-REACT_APP_PORT=3000
-REACT_APP_API_URL=http://localhost:8080
-```
-
-#### Opción 3: Variables de línea de comandos
-```bash
-# Backend en puerto 8080
-BACKEND_PORT=8080 npm run backend
-
-# Frontend en puerto 3001
-PORT=3001 npm run frontend
-```
-
-### Ejemplos de Configuración
-
-**Configuración por defecto:**
-```
-Backend: http://localhost:5000
-Frontend: http://localhost:3000
-```
-
-**Puertos personalizados:**
-```
-Backend: http://localhost:8080
-Frontend: http://localhost:3001
-```
-
-**Múltiples instancias simultáneamente:**
-```bash
-# Terminal 1 - Instancia 1
-BACKEND_PORT=5000 npm run backend
-
-# Terminal 2 - Instancia 1
-PORT=3000 npm run frontend
-
-# Terminal 3 - Instancia 2
-BACKEND_PORT=5001 npm run backend
-
-# Terminal 4 - Instancia 2
-PORT=3001 npm run frontend
-```
-
-Para cambiar puertos en producción, asegúrate de actualizar `REACT_APP_API_URL` para que apunte al backend correcto.
-
-## 🐛 Troubleshooting
-
-### Error: "Cannot find module 'express'"
-```bash
-npm install express
-```
-
-### Error: "react-scripts: command not found"
-```bash
-cd frontend && npm install
-```
-
-### El QR no carga
-- Verifica que el backend esté corriendo en puerto 5000
-- Revisa la consola del navegador (F12) para más detalles
-
-### El iframe de Acuity no carga
-- Verifica que tengas conexión a internet
-- Comprueba que el ID de propietario (39614611) sea correcto
-
-## 🚀 Despliegue
-
-Guía completa en **[DEPLOY.md](./DEPLOY.md)** (Nginx Proxy Manager, PM2, troubleshooting).
-
-### Producción con PM2 (resumen)
-
-```bash
-# En el servidor
-npm run install-all
-cp .env.example .env   # editar FRONTEND_PUBLIC_URL, SERVE_FRONTEND=true
-npm run build
-mkdir -p logs
-pm2 start ecosystem.config.cjs
-pm2 save
-pm2 startup
-```
-
-NPM → Forward Port **5000** (no 3099).
-
-```bash
-# Actualizar tras git pull
-git pull && npm run build && pm2 restart dynqr
-```
-
-Comandos npm: `pm2:start`, `pm2:restart`, `pm2:logs`, `pm2:stop`.
-
-## 📄 Licencia
-
-Este proyecto es de código abierto.
-
-## 👨‍💻 Autor
-
-Generado para Toy Story Universe
-
----
-
-**¿Necesitas ayuda?** Revisa los logs del servidor y la consola del navegador para debugging.
+Detalle en [docs/configuration.md](docs/configuration.md).
