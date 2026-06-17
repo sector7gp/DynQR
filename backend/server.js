@@ -7,7 +7,15 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// Configurar CORS más explícitamente
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Almacenamiento de tokens válidos (en memoria)
