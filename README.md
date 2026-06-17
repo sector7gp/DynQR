@@ -32,14 +32,12 @@ Esto instalará las dependencias del backend y frontend automáticamente.
 
 ## 🏃 Ejecución
 
-### Opción 1: Ejecutar ambos servidores simultáneamente
+### Opción 1: Ejecutar ambos servidores simultáneamente (RECOMENDADO)
 ```bash
 npm run dev
 ```
 
-Esto iniciará:
-- Backend en: `http://localhost:5000`
-- Frontend en: `http://localhost:3000`
+Esto usará automáticamente los puertos configurados en `.env`.
 
 ### Opción 2: Ejecutar servidores por separado
 
