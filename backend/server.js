@@ -107,11 +107,19 @@ app.get('/api/health', (req, res) => {
 });
 
 const buildPath = path.join(__dirname, '../frontend/build');
-if (process.env.SERVE_FRONTEND === 'true') {
+const fs = require('fs');
+const shouldServeFrontend =
+  process.env.SERVE_FRONTEND === 'true' ||
+  (process.env.NODE_ENV === 'production' && fs.existsSync(path.join(buildPath, 'index.html')));
+
+if (shouldServeFrontend) {
   app.use(express.static(buildPath));
   app.get(/^(?!\/api).*/, (req, res) => {
     res.sendFile(path.join(buildPath, 'index.html'));
   });
+  console.log('📦 Sirviendo frontend desde:', buildPath);
+} else if (process.env.SERVE_FRONTEND === 'true') {
+  console.warn('⚠️  SERVE_FRONTEND=true pero no existe frontend/build. Ejecutá: npm run build');
 }
 
 app.listen(PORT, HOST, () => {

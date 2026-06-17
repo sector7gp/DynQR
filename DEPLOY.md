@@ -1,6 +1,77 @@
 # 🚀 Despliegue en Producción
 
-## Problema común
+## ⚠️ Error 500 con OpenResty / Nginx Proxy Manager
+
+Si ves **500 Internal Server Error**, casi siempre es una de estas causas:
+
+| Causa | Solución |
+|-------|----------|
+| Proxy apunta al puerto **3099** (React dev) | Cambiar a puerto **5000** (backend) |
+| nginx intenta servir `/var/www/.../build` que **no existe** | Usar Opción A (proxy todo a Node) |
+| Backend no tiene el build | `npm run build` + `SERVE_FRONTEND=true` |
+| Mezclaste proxy completo + config estática | Elegir **solo una** opción |
+
+---
+
+## Opción A: Nginx Proxy Manager / OpenResty (RECOMENDADA)
+
+La más simple. El proxy envía **todo** el tráfico al backend Node en puerto 5000.
+
+### 1. En el servidor — `.env`
+
+```env
+BACKEND_PORT=5000
+BACKEND_HOST=0.0.0.0
+FRONTEND_PUBLIC_URL=https://dynqr.sector7gp.com
+REACT_APP_API_URL=
+SERVE_FRONTEND=true
+```
+
+### 2. Compilar e iniciar
+
+```bash
+git pull
+npm run build
+npm run backend
+# o con PM2:
+pm2 start "npm run backend" --name dynqr
+```
+
+### 3. En Nginx Proxy Manager
+
+| Campo | Valor |
+|-------|-------|
+| Domain Names | `dynqr.sector7gp.com` |
+| Forward Hostname | `127.0.0.1` (o `10.10.7.10`) |
+| Forward Port | **5000** |
+| Scheme | `http` |
+| Websockets | OFF |
+
+**No agregues** locations custom de `/api/` en Advanced — no hace falta.
+
+### 4. Verificar
+
+```bash
+curl http://127.0.0.1:5000/api/health
+curl https://dynqr.sector7gp.com/api/health
+```
+
+---
+
+## Opción B: nginx manual (estáticos + /api)
+
+Solo si tenés acceso directo al nginx y **no** usás NPM para el proxy principal.
+
+Ver `nginx.example.conf` — Opción B comentada.
+
+**Importante:** la ruta `root` debe existir y tener `index.html`:
+```bash
+ls frontend/build/index.html
+```
+
+---
+
+## Problema común: frontend apunta a localhost
 
 Si ves en la consola:
 ```
