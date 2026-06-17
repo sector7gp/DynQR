@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { apiUrl } from './api';
+import { QR_TITLE, QR_SUBTITLE, SHOW_COUNTDOWN } from './config';
 import './QRDisplay.css';
 
 function QRDisplay() {
@@ -31,6 +32,8 @@ function QRDisplay() {
   }, []);
 
   useEffect(() => {
+    if (!SHOW_COUNTDOWN) return undefined;
+
     const timer = setInterval(() => {
       setCountdown(prev => prev > 0 ? prev - 1 : 30);
     }, 1000);
@@ -49,8 +52,8 @@ function QRDisplay() {
       `}</style>
       
       <div className="qr-wrapper">
-        <h1 className="title">🎬 Escanea para Reservar</h1>
-        <p className="subtitle">¡Bienvenido a Toy Story Universe!</p>
+        <h1 className="title">{QR_TITLE}</h1>
+        {QR_SUBTITLE && <p className="subtitle">{QR_SUBTITLE}</p>}
         
         {loading ? (
           <div className="loading">
@@ -69,18 +72,13 @@ function QRDisplay() {
               )}
             </div>
             
-            <div className="info-box">
-              <p className="info-title">⏰ Se refresca en:</p>
-              <p className="countdown">{countdown}s</p>
-              <p className="info-text">El código QR se actualiza automáticamente cada 30 segundos</p>
-            </div>
-
-            <div className="toys-decoration">
-              <span className="toy">🤠</span>
-              <span className="toy">🚀</span>
-              <span className="toy">👽</span>
-              <span className="toy">🐷</span>
-            </div>
+            {SHOW_COUNTDOWN && (
+              <div className="info-box">
+                <p className="info-title">⏰ Se refresca en:</p>
+                <p className="countdown">{countdown}s</p>
+                <p className="info-text">El código QR se actualiza automáticamente cada 30 segundos</p>
+              </div>
+            )}
           </div>
         )}
       </div>

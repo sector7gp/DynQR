@@ -180,11 +180,22 @@ BACKEND_PORT=5000
 BACKEND_HOST=localhost
 ```
 
-**Frontend** (`.env.local`):
+**Frontend** (`.env` o `.env.local` — requieren `npm run build` en producción):
 ```
-REACT_APP_API_URL=http://localhost:5000
+REACT_APP_API_URL=
+REACT_APP_QR_TITLE=🎬 Escanea para Reservar
+REACT_APP_QR_SUBTITLE=¡Bienvenido a Toy Story Universe!
+REACT_APP_SHOW_COUNTDOWN=true
 PORT=3000
 ```
+
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `REACT_APP_QR_TITLE` | Título principal de la página QR | `🎬 Escanea para Reservar` |
+| `REACT_APP_QR_SUBTITLE` | Subtítulo / bienvenida | `¡Bienvenido a Toy Story Universe!` |
+| `REACT_APP_SHOW_COUNTDOWN` | Mostrar cuadro del contador (`true` / `false`) | `true` |
+
+Para ocultar el contador: `REACT_APP_SHOW_COUNTDOWN=false` y luego `npm run build`.
 
 ### Cambiar Puertos
 
