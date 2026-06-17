@@ -178,15 +178,69 @@ Ambas páginas están optimizadas para:
 
 **Backend** (`.env`):
 ```
-PORT=5000
+BACKEND_PORT=5000
+BACKEND_HOST=localhost
 ```
 
 **Frontend** (`.env.local`):
 ```
 REACT_APP_API_URL=http://localhost:5000
+PORT=3000
 ```
 
-Para cambiar la URL del servidor en producción, actualiza `REACT_APP_API_URL`.
+### Cambiar Puertos
+
+#### Opción 1: Usar script interactivo (RECOMENDADO)
+```bash
+bash configure-ports.sh
+```
+
+#### Opción 2: Editar `.env` manualmente
+```
+BACKEND_PORT=8080
+REACT_APP_PORT=3000
+REACT_APP_API_URL=http://localhost:8080
+```
+
+#### Opción 3: Variables de línea de comandos
+```bash
+# Backend en puerto 8080
+BACKEND_PORT=8080 npm run backend
+
+# Frontend en puerto 3001
+PORT=3001 npm run frontend
+```
+
+### Ejemplos de Configuración
+
+**Configuración por defecto:**
+```
+Backend: http://localhost:5000
+Frontend: http://localhost:3000
+```
+
+**Puertos personalizados:**
+```
+Backend: http://localhost:8080
+Frontend: http://localhost:3001
+```
+
+**Múltiples instancias simultáneamente:**
+```bash
+# Terminal 1 - Instancia 1
+BACKEND_PORT=5000 npm run backend
+
+# Terminal 2 - Instancia 1
+PORT=3000 npm run frontend
+
+# Terminal 3 - Instancia 2
+BACKEND_PORT=5001 npm run backend
+
+# Terminal 4 - Instancia 2
+PORT=3001 npm run frontend
+```
+
+Para cambiar puertos en producción, asegúrate de actualizar `REACT_APP_API_URL` para que apunte al backend correcto.
 
 ## 🐛 Troubleshooting
 

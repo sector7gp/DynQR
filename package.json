@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "backend": "node backend/server.js",
-    "frontend": "cd frontend && npm start",
+    "backend": "node -r dotenv/config backend/server.js",
+    "frontend": "cd frontend && PORT=${PORT:-3000} npm start",
     "install-all": "npm install && cd frontend && npm install && cd ..",
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+    "dev": "concurrently --kill-others \"npm run backend\" \"npm run frontend\""
   },
   "repository": {
     "type": "git",

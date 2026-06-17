@@ -5,11 +5,18 @@ const qrcode = require('qrcode');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
+const HOST = process.env.BACKEND_HOST || 'localhost';
 
 // Configurar CORS más explícitamente
+const frontendPort = process.env.REACT_APP_PORT || 3000;
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5000'],
+  origin: [
+    `http://localhost:${frontendPort}`,
+    `http://127.0.0.1:${frontendPort}`,
+    `http://localhost:5000`,
+    `http://127.0.0.1:5000`
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -90,7 +97,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-  console.log(`📱 QR disponible en http://localhost:${PORT}/api/qr`);
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Servidor corriendo en http://${HOST}:${PORT}`);
+  console.log(`📱 QR disponible en http://${HOST}:${PORT}/api/qr`);
 });
