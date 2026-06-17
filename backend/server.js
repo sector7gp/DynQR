@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const qrcode = require('qrcode');
 require('dotenv').config();
@@ -7,16 +8,24 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.BACKEND_PORT || process.env.PORT || 5000;
 const HOST = process.env.BACKEND_HOST || 'localhost';
-
-// Configurar CORS más explícitamente
 const frontendPort = process.env.REACT_APP_PORT || 3000;
+const frontendPublicUrl = (
+  process.env.FRONTEND_PUBLIC_URL ||
+  `http://localhost:${frontendPort}`
+).replace(/\/$/, '');
+
+const defaultOrigins = [
+  `http://localhost:${frontendPort}`,
+  `http://127.0.0.1:${frontendPort}`,
+  frontendPublicUrl
+].filter(Boolean);
+
+const corsOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean)
+  : defaultOrigins;
+
 const corsOptions = {
-  origin: [
-    `http://localhost:${frontendPort}`,
-    `http://127.0.0.1:${frontendPort}`,
-    `http://localhost:5000`,
-    `http://127.0.0.1:5000`
-  ],
+  origin: corsOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -47,7 +56,7 @@ app.get('/api/qr', async (req, res) => {
   try {
     const currentToken = Array.from(validTokens)[0];
     console.log('📲 QR solicitado. Token actual:', currentToken.substring(0, 8) + '...');
-    const reservationUrl = `http://localhost:3000/reservations?token=${currentToken}`;
+    const reservationUrl = `${frontendPublicUrl}/reservations?token=${currentToken}`;
     
     const qrImage = await qrcode.toDataURL(reservationUrl, {
       errorCorrectionLevel: 'H',
@@ -97,7 +106,17 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+const buildPath = path.join(__dirname, '../frontend/build');
+if (process.env.SERVE_FRONTEND === 'true') {
+  app.use(express.static(buildPath));
+  app.get(/^(?!\/api).*/, (req, res) => {
+    res.sendFile(path.join(buildPath, 'index.html'));
+  });
+}
+
 app.listen(PORT, HOST, () => {
   console.log(`🚀 Servidor corriendo en http://${HOST}:${PORT}`);
   console.log(`📱 QR disponible en http://${HOST}:${PORT}/api/qr`);
+  console.log(`🌐 URL pública del frontend: ${frontendPublicUrl}`);
+  console.log(`🔓 CORS origins: ${corsOrigins.join(', ')}`);
 });

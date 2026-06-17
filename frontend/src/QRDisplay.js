@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { apiUrl } from './api';
 import './QRDisplay.css';
 
 function QRDisplay() {
@@ -10,9 +11,9 @@ function QRDisplay() {
   useEffect(() => {
     const fetchQR = async () => {
       try {
-        const apiUrl = `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/qr`;
-        console.log('📱 Fetching QR from:', apiUrl);
-        const response = await axios.get(apiUrl);
+        const url = apiUrl('/api/qr');
+        console.log('📱 Fetching QR from:', url);
+        const response = await axios.get(url);
         console.log('✅ QR Response:', response.data);
         setQrImage(response.data.qrImage);
         setCountdown(30);
