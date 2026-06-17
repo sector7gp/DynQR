@@ -69,9 +69,9 @@ SERVE_FRONTEND=true
 git pull
 npm run build
 npm run backend
-# o con PM2:
-pm2 start "npm run backend" --name dynqr
 ```
+
+Para producción con PM2, ver la sección [Despliegue con PM2](#despliegue-con-pm2-producción) más abajo.
 
 ### 3. En Nginx Proxy Manager
 
@@ -90,6 +90,146 @@ pm2 start "npm run backend" --name dynqr
 ```bash
 curl http://127.0.0.1:5000/api/health
 curl https://dynqr.sector7gp.com/api/health
+```
+
+---
+
+## Despliegue con PM2 (producción)
+
+PM2 mantiene el proceso Node corriendo, lo reinicia si falla y permite ver logs fácilmente.
+
+### Requisitos
+
+```bash
+npm install -g pm2
+```
+
+### 1. Configurar `.env`
+
+```env
+BACKEND_PORT=5000
+BACKEND_HOST=0.0.0.0
+FRONTEND_PUBLIC_URL=https://dynqr.sector7gp.com
+REACT_APP_API_URL=
+SERVE_FRONTEND=true
+NODE_ENV=production
+```
+
+### 2. Primera instalación en el servidor
+
+```bash
+cd /opt/apps/DynQR          # ruta donde clonaste el repo
+git clone https://github.com/sector7gp/DynQR.git .   # solo la primera vez
+
+npm run install-all
+cp .env.example .env        # editar con tus valores
+npm run build
+mkdir -p logs
+```
+
+### 3. Iniciar con PM2
+
+**Opción A — archivo ecosystem (recomendado):**
+
+```bash
+pm2 start ecosystem.config.cjs
+```
+
+**Opción B — npm script:**
+
+```bash
+npm run pm2:start
+```
+
+**Opción C — comando directo:**
+
+```bash
+pm2 start backend/server.js --name dynqr --node-args="-r dotenv/config"
+```
+
+### 4. Persistir tras reinicio del servidor
+
+```bash
+pm2 save
+pm2 startup
+# PM2 mostrará un comando sudo — copialo y ejecutalo
+```
+
+### 5. Nginx Proxy Manager
+
+| Campo | Valor |
+|-------|-------|
+| Forward Hostname | `127.0.0.1` o IP del servidor |
+| Forward Port | **5000** |
+| Scheme | `http` |
+
+No uses el puerto 3099 (React dev) en producción.
+
+### Comandos útiles
+
+```bash
+pm2 status              # estado de procesos
+pm2 logs dynqr          # logs en tiempo real
+pm2 logs dynqr --lines 100
+npm run pm2:restart     # reiniciar tras cambios en backend
+npm run pm2:stop        # detener
+npm run pm2:delete      # eliminar de PM2
+```
+
+### Actualizar la app (redeploy)
+
+Cada vez que subas cambios a Git:
+
+```bash
+cd /opt/apps/DynQR
+git pull
+npm run install-all     # solo si cambiaron dependencias
+npm run build             # obligatorio si cambió el frontend
+pm2 restart dynqr
+pm2 logs dynqr --lines 50
+```
+
+Si cambiaste variables `REACT_APP_*` en `.env`, **siempre** hay que volver a compilar:
+
+```bash
+npm run build
+pm2 restart dynqr
+```
+
+### Verificar que todo funciona
+
+```bash
+pm2 status
+curl http://127.0.0.1:5000/api/health
+curl https://dynqr.sector7gp.com/api/health
+```
+
+Respuesta esperada:
+
+```json
+{"status":"ok","tokensActive":1,"timestamp":"..."}
+```
+
+### Solución de problemas con PM2
+
+| Problema | Qué hacer |
+|----------|-----------|
+| `errored` o reinicios constantes | `pm2 logs dynqr --err` |
+| Puerto 5000 en uso | `lsof -i :5000` y matar el proceso, o cambiar `BACKEND_PORT` |
+| Frontend no carga | Verificar `npm run build` y `SERVE_FRONTEND=true` |
+| QR apunta a localhost | Recompilar con `FRONTEND_PUBLIC_URL` correcto en `.env` |
+| Invalid Host header | NPM no debe apuntar al puerto 3099 (React dev) |
+
+### Detener procesos viejos
+
+Si antes corrías frontend y backend por separado:
+
+```bash
+pm2 list
+pm2 delete dynqr-frontend   # o el nombre que tuviera
+pm2 delete all              # cuidado: borra todos los procesos PM2
+pm2 start ecosystem.config.cjs
+pm2 save
 ```
 
 ---

@@ -262,15 +262,29 @@ cd frontend && npm install
 
 ## 🚀 Despliegue
 
-Para desplegar en producción:
+Guía completa en **[DEPLOY.md](./DEPLOY.md)** (Nginx Proxy Manager, PM2, troubleshooting).
 
-1. **Backend**: Hospedar con Node.js (ej: Heroku, Railway, Digital Ocean)
-2. **Frontend**: Construir y hospedar en servicio estático (ej: Netlify, Vercel)
+### Producción con PM2 (resumen)
 
 ```bash
-# Construir frontend para producción
-cd frontend && npm run build
+# En el servidor
+npm run install-all
+cp .env.example .env   # editar FRONTEND_PUBLIC_URL, SERVE_FRONTEND=true
+npm run build
+mkdir -p logs
+pm2 start ecosystem.config.cjs
+pm2 save
+pm2 startup
 ```
+
+NPM → Forward Port **5000** (no 3099).
+
+```bash
+# Actualizar tras git pull
+git pull && npm run build && pm2 restart dynqr
+```
+
+Comandos npm: `pm2:start`, `pm2:restart`, `pm2:logs`, `pm2:stop`.
 
 ## 📄 Licencia
 

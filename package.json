@@ -9,6 +9,11 @@
     "frontend": "cd frontend && npm start",
     "build": "bash -c 'set -a && [ -f .env ] && source .env; set +a && cd frontend && npm run build'",
     "prod": "npm run build && node -r dotenv/config backend/server.js",
+    "pm2:start": "pm2 start ecosystem.config.cjs",
+    "pm2:stop": "pm2 stop dynqr",
+    "pm2:restart": "pm2 restart dynqr",
+    "pm2:logs": "pm2 logs dynqr",
+    "pm2:delete": "pm2 delete dynqr",
     "install-all": "npm install && cd frontend && npm install && cd ..",
     "dev": "bash start.sh"
   },

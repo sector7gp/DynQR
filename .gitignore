@@ -31,3 +31,6 @@ Thumbs.db
 # Misc
 .cache/
 .parcel-cache/
+
+# PM2 logs
+logs/
