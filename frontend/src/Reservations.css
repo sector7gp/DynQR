@@ -82,27 +82,6 @@
   margin: 0;
 }
 
-.error-decoration {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin: 40px 0;
-}
-
-.error-emoji {
-  font-size: 3em;
-  animation: wobble 2s ease-in-out infinite;
-}
-
-.error-emoji:nth-child(1) { animation-delay: 0s; }
-.error-emoji:nth-child(2) { animation-delay: 0.2s; }
-.error-emoji:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes wobble {
-  0%, 100% { transform: rotate(-5deg); }
-  50% { transform: rotate(5deg); }
-}
-
 .error-footer {
   background: #F8F9FA;
   border-top: 2px solid #E74C3C;

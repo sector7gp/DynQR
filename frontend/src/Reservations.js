@@ -74,12 +74,6 @@ function Reservations() {
             </p>
           </div>
 
-          <div className="error-decoration">
-            <span className="error-emoji">🚫</span>
-            <span className="error-emoji">🎬</span>
-            <span className="error-emoji">🚫</span>
-          </div>
-
           <div className="error-footer">
             <p>Si crees que esto es un error, contacta con soporte</p>
           </div>
