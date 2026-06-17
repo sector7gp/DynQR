@@ -1,5 +1,41 @@
 # 🚀 Despliegue en Producción
 
+## ⚠️ Error "Invalid Host header"
+
+Este error aparece cuando NPM apunta al **servidor de desarrollo de React** (`npm start` / puerto **3099**).
+
+Webpack bloquea peticiones cuyo `Host` es `dynqr.sector7gp.com` porque solo espera `localhost`.
+
+**No uses `npm run dev` ni `npm start` en producción.**
+
+### Solución
+
+1. Compilar el frontend:
+   ```bash
+   npm run build
+   ```
+
+2. En `.env`:
+   ```env
+   SERVE_FRONTEND=true
+   FRONTEND_PUBLIC_URL=https://dynqr.sector7gp.com
+   REACT_APP_API_URL=
+   ```
+
+3. Iniciar **solo el backend** (sirve frontend + API):
+   ```bash
+   npm run backend
+   ```
+
+4. En NPM cambiar **Forward Port: 3099 → 5000**
+
+5. Detener el proceso React dev que corre en 3099:
+   ```bash
+   pm2 stop dynqr-frontend   # o kill del proceso en 3099
+   ```
+
+---
+
 ## ⚠️ Error 500 con OpenResty / Nginx Proxy Manager
 
 Si ves **500 Internal Server Error**, casi siempre es una de estas causas:
